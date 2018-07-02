@@ -1,0 +1,85 @@
+---
+title: "Appendix - Simulation experiment mediation analysis"
+author: "Elmar W. Tobi, Erik W. van Zwet, L.H. Lumey, Bastiaan T. Heijmans"
+date: "July 2, 2018"
+output: 
+  html_document:
+    toc: true
+---
+
+Set options.
+```{r set-options}
+options(width = 200)
+```
+
+# Introduction
+
+Simulation.
+
+```{r, echo = TRUE, message=FALSE,warning=FALSE}
+setwd("M:\\projects\\Tobi\\mediation artikel\\rebuttal")
+set.seed(123)    # fix seed of RNG for reproducibility
+library(bda)     # for Sobel test
+
+n1=350
+n2=650
+n=n1+n2
+Famine  = c(rep(0,n1),rep(1,n2))  # Exposure to Famine
+
+K=1000          # number of simulations
+```
+
+# Scenario Mediation
+
+![](5-PartialMediation.png){width=50%}
+
+\bigskip
+
+
+```{r, echo = TRUE, message=FALSE,warning=FALSE}
+a=0.4
+b=0.1
+c=0.2
+
+pval=numeric(K)
+for (ind in 1:K){
+  DNAm    = a * Famine + rnorm(n,0,1)
+  Health  = c * Famine + b *DNAm + rnorm(n,0,1)
+  fit  = mediation.test(mv=DNAm,iv=Famine,dv=Health)
+  pval[ind] = fit[2,1]
+}
+power = mean(pval<0.05)
+power
+```
+
+
+# Scenario Reverse Causation
+
+
+![](6-PartialReverseCausation.png){width=50%}
+
+\bigskip
+
+
+```{r, echo = TRUE, message=FALSE,warning=FALSE}
+d=0.3
+e=0.1
+f=0.1
+
+pval=numeric(K)
+for (ind in 1:K){
+  Health  = d * Famine + rnorm(n,0,1)
+  DNAm    = f * Famine + e * Health + rnorm(n,0,1)
+  fit  = mediation.test(mv=DNAm,iv=Famine,dv=Health)
+  pval[ind] = fit[2,1]
+}
+power = mean(pval<0.05)
+power
+```
+
+# Session information
+
+```{r, warning=FALSE, message=FALSE}
+sessionInfo()
+```
+

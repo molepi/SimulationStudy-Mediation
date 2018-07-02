@@ -1,0 +1,131 @@
+---
+title: "Simulation experiment mediation analysis"
+author: "Elmar W. Tobi, Erik W. van Zwet, L.H. Lumey, Bastiaan T. Heijmans"
+date: "July 2, 2018"
+output: 
+  html_document:
+    toc: true
+---
+
+Set options.
+```{r set-options}
+options(width = 200)
+```
+
+# Introduction
+
+We perform a simulation experiment where we consider scenario's A-D from the letter to the editor. In each simulation, we do the Sobel test for mediation from the bda package. We repeat K=1000 times, and compute the proportion where the Sobel test is significant at level 5%.
+
+```{r, echo = TRUE, message=FALSE,warning=FALSE}
+setwd("M:\\projects\\Tobi\\mediation artikel\\rebuttal")
+set.seed(123)    # fix seed of RNG for reproducibility
+library(bda)     # for Sobel test
+
+n1=350
+n2=650
+n=n1+n2
+Famine  = c(rep(0,n1),rep(1,n2))  # Exposure to Famine
+
+K=1000          # number of simulations
+```
+
+# Scenario A Mediation
+
+![](1-Mediation.png){width=50%}
+
+\bigskip
+
+
+```{r, echo = TRUE, message=FALSE,warning=FALSE}
+a=0.4
+b=0.1
+
+pval=numeric(K)
+for (ind in 1:K){
+  DNAm   = a * Famine + rnorm(n,0,1)
+  Health = b * DNAm + rnorm(n,0,1)
+  fit    = mediation.test(mv=DNAm,iv=Famine,dv=Health)
+  pval[ind] = fit[2,1]
+}
+power = mean(pval<0.05)
+power
+```
+
+# Scenario B Reverse Causation
+
+![](2-ReverseCausation.png){width=50%}
+
+\bigskip
+
+
+```{r, echo = TRUE, message=FALSE,warning=FALSE}
+c=0.2 
+d=0.2 
+
+pval=numeric(K)
+for (ind in 1:K){
+  Health  = c * Famine + rnorm(n,0,1)
+  DNAm    = d * Health + rnorm(n,0,1)
+  fit     = mediation.test(mv=DNAm,iv=Famine,dv=Health)
+  pval[ind] = fit[2,1]
+}
+power = mean(pval<0.05)
+power
+```
+
+
+# Scenario C Unobserved Driver of both DNAm and Health
+
+![](3-Driver.png){width=50%}
+
+\bigskip
+
+
+```{r, echo = TRUE, message=FALSE,warning=FALSE}
+e=0.4
+f=0.6
+g=0.2
+
+pval=numeric(K)
+for (ind in 1:K){
+  Driver = e * Famine + rnorm(n,0,1)
+  DNAm   = f * Driver + rnorm(n,0,1)
+  Health = g * Driver + rnorm(n,0,1)
+  fit  = mediation.test(mv=DNAm,iv=Famine,dv=Health)
+  pval[ind] = fit[2,1]
+}
+power = mean(pval<0.05)
+power
+```
+
+# Scenario D Confounder
+
+![](4-Confounder.png){width=50%}
+
+\bigskip
+
+
+```{r, echo = TRUE, message=FALSE,warning=FALSE}
+h=0.4
+i=0.2
+j=0.2
+
+pval=numeric(K)
+for (ind in 1:K){
+  Confounder = rnorm(n,0,1)  
+  DNAm       = h * Famine +  i * Confounder + rnorm(n,0,1)
+  Health     = j * Confounder + rnorm(n,0,1)
+  fit  = mediation.test(mv=DNAm,iv=Famine,dv=Health)
+  pval[ind] = fit[2,1]
+}
+power = mean(pval<0.05)
+power
+```
+
+# Session information
+
+```{r, warning=FALSE, message=FALSE}
+sessionInfo()
+```
+
+
