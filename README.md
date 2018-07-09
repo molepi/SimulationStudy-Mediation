@@ -9,7 +9,7 @@ Here, we provide a set of _R_ scripts to explore the impact of four scenarios pr
 * [R mark-down version](simulation%202018%2007%2002.rmd)
 
 
-We provide a full description of our simulation studies in a manuscript that will be available elsewhere, the abstract of which is: 
+We provide a full description of our simulation studies in a manuscript posted on [**BioRxiv**](https://www.biorxiv.org/content/early/2018/07/05/362392), the abstract of which is: 
 ### Why mediation analysis trumps Mendelian randomization in population epigenomics studies of the Dutch Famine ###
 Elmar W. Tobi, Erik W. van Zwet, L.H. Lumey, Bastiaan T. Heijmans
 
